@@ -2,36 +2,57 @@
 <html>
 <head>
     <title>Covoiturage</title>
-    <?php
-        $host = 'localhost';
-        $db   = 'nom_de_la_base_de_donnees';
-        $user = 'nom_utilisateur';
-        $pass = 'mot_de_passe';
-        $charset = 'utf8mb4';
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Covoiturage</title>
+        <?php
+            $host = 'localhost';
+            $db   = 'nom_de_la_base_de_donnees';
+            $user = 'nom_utilisateur';
+            $pass = 'mot_de_passe';
+            $charset = 'utf8mb4';
 
-        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-        $pdo = new PDO($dsn, $user, $pass);
+            $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+            $pdo = new PDO($dsn, $user, $pass);
 
-        $sql = "SELECT adresse FROM table_adresses";
-        $stmt = $pdo->query($sql);
+            $sql = "SELECT adresse FROM table_adresses";
+            $stmt = $pdo->query($sql);
 
-        $adresses = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $adresses[] = $row['adresse'];
-        }
+            $adresses = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $adresses[] = urlencode($row['adresse']);
+            }
 
-        $origin = urlencode($adresses[0]);
-        $destination = urlencode($adresses[count($adresses) - 1]);
+            $origin = $adresses[0];
+            $destination = $adresses[count($adresses) - 1];
 
-        $apiKey = 'AIzaSyBDJs_wHyGvTeo8k5PbwzNdNyYs4cBAplE';
+            // Remove origin and destination from the addresses array
+            array_shift($adresses);
+            array_pop($adresses);
 
-        echo "<iframe
-            width='600'
-            height='450'
-            frameborder='0' style='border:0'
-            src='https://www.google.com/maps/embed/v1/directions?key=$apiKey&origin=$origin&destination=$destination' allowfullscreen>
-        </iframe>";
-?>
+            // Create waypoints string
+            $waypoints = implode('|', $adresses);
+
+            $apiKey = 'AIzaSyBDJs_wHyGvTeo8k5PbwzNdNyYs4cBAplE';
+
+            echo "<iframe
+                width='600'
+                height='450'
+                frameborder='0' style='border:0'
+                src='https://www.google.com/maps/embed/v1/directions?key=$apiKey&origin=$origin&destination=$destination&waypoints=$waypoints' allowfullscreen>
+            </iframe>";
+        ?>
+        <style>
+            /* Assurez-vous de définir une taille pour la carte */
+            /* CSS FILE, By Damien LETALLEUR; BUT R&T */
+            // ... Rest of your CSS code ...
+        </style>
+    </head>
+    <body>
+        <!-- Rest of your HTML code -->
+    </body>
+    </html>
     <style>
         /* Assurez-vous de définir une taille pour la carte */
         /* CSS FILE, By Antonin Michon; BUT R&T */
