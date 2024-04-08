@@ -16,6 +16,17 @@
             $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
             $pdo = new PDO($dsn, $user, $pass);
 
+            // New SQL query to get the driver with the most seats in his car
+            $sql = "SELECT Etudiant.Nom, Vehicule.NbPlace
+                    FROM Etudiant INNER JOIN Vehicule ON Etudiant.[NEtu] = Vehicule.[Propriétaire]
+                    ORDER BY Vehicule.NbPlace DESC LIMIT 1";
+            $stmt = $pdo->query($sql);
+
+            $driver = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Use the driver's address as the origin
+            $origin = urlencode($driver['Nom']);
+
             $sql = "SELECT adresse FROM table_adresses";
             $stmt = $pdo->query($sql);
 
@@ -24,7 +35,6 @@
                 $adresses[] = urlencode($row['adresse']);
             }
 
-            $origin = $adresses[0];
             $destination = $adresses[count($adresses) - 1];
 
             // Remove origin and destination from the addresses array
