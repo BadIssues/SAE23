@@ -2,42 +2,36 @@
 <html>
 <head>
     <title>Covoiturage</title>
-    <script>
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: {lat: 48.8566, lng: 2.3522} // Coordonnées de Paris par défaut
-            });
+    <?php
+        $host = 'localhost';
+        $db   = 'nom_de_la_base_de_donnees';
+        $user = 'nom_utilisateur';
+        $pass = 'mot_de_passe';
+        $charset = 'utf8mb4';
 
-            // Fonction pour géocoder une adresse
-            function geocodeAddress(geocoder, map) {
-                var address = document.getElementById('cityInput').value; // Récupère la valeur du champ de saisie
+        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+        $pdo = new PDO($dsn, $user, $pass);
 
-                geocoder.geocode({'address': address}, function(results, status) {
-                    if (status === 'OK') {
-                        map.setCenter(results[0].geometry.location); // Centre la carte sur les coordonnées de l'adresse
-                        var marker = new google.maps.Marker({
-                            map: map,
-                            position: results[0].geometry.location
-                        });
-                    } else {
-                        alert('Geocode was not successful for the following reason: ' + status);
-                    }
-                });
-            }
+        $sql = "SELECT adresse FROM table_adresses";
+        $stmt = $pdo->query($sql);
 
-            // Création d'un objet Geocoder
-            var geocoder = new google.maps.Geocoder();
-
-            // Écouteur d'événement pour le bouton
-            document.getElementById('submitBtn').addEventListener('click', function() {
-                geocodeAddress(geocoder, map); // Appelle la fonction de géocodage lorsque le bouton est cliqué
-            });
+        $adresses = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $adresses[] = $row['adresse'];
         }
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?&callback=initMap">
-    </script>
+
+        $origin = urlencode($adresses[0]);
+        $destination = urlencode($adresses[count($adresses) - 1]);
+
+        $apiKey = 'AIzaSyBDJs_wHyGvTeo8k5PbwzNdNyYs4cBAplE';
+
+        echo "<iframe
+            width='600'
+            height='450'
+            frameborder='0' style='border:0'
+            src='https://www.google.com/maps/embed/v1/directions?key=$apiKey&origin=$origin&destination=$destination' allowfullscreen>
+        </iframe>";
+?>
     <style>
         /* Assurez-vous de définir une taille pour la carte */
         /* CSS FILE, By Antonin Michon; BUT R&T */
@@ -266,8 +260,8 @@
             .title {
                 font-size: 24px; /* Taille de la police réduite pour les téléphones */
             }
-    }
-</style>
+
+    </style>
 </head>
 <body>
     <header>
