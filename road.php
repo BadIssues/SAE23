@@ -39,14 +39,47 @@
                     </form>
                 </p>
                 <?php
+                // Vérification si le formulaire a été soumis
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    // Récupérer les valeurs envoyées par le formulaire
+                    // Récupération des valeurs du formulaire
                     $depart = $_POST['depart'];
                     $arrivee = $_POST['arrivee'];
+                    $voiture = $_POST['voiture'];
+                    $heureDepart = $_POST['heureDepart'];
 
-                    // Récupération pour l'api
+                    // Connexion à la base de données
+                    $serveur = "mysql_serv"; // Changez cela si votre base de données est hébergée ailleurs
+                    $utilisateur = "dletalle"; // Remplacez par votre nom d'utilisateur de la base de données
+                    $motDePasse = "dletalle-rt2023!"; // Remplacez par votre mot de passe de la base de données
+                    $baseDeDonnees = "dletalle";
+
+                    // Connexion à la base de données MySQL
+                    $connexion = new mysqli($serveur, $utilisateur, $motDePasse, $baseDeDonnees);
+
+                    // Vérification de la connexion
+                    if ($connexion->connect_error) {
+                        die("La connexion a échoué : " . $connexion->connect_error);
+                    }
+
+                    // Requête d'insertion des données dans la table de la base de données
+                    // Ajout dans la table à adapter aux prochaines requetes. Exemple ci-dessous pour une table Depart et Arrivee
+                    $requete = "INSERT INTO Depart (idHdepart, Lieu, horaire-, horaire+) VALUES ('$depart', '$arrivee', '$voiture', '$heureDepart')";
+                    $requeteb = "INSERT INTO Arrivee (idHarrivee, Lieu, horaire-, horaire+) VALUES ('$depart', '$arrivee', '$voiture', '$heureDepart')";
+                    
+                    
+                    // Exécution de la requête
+                    if ($connexion->query($requete) === TRUE) {
+                        echo "Les données ont été ajoutées avec succès.";
+                    } else {
+                        echo "Erreur lors de l'ajout des données : " . $connexion->error;
+                    }
+
+                    // Fermeture de la connexion à la base de données
+                    $connexion->close();
                 }
                 ?>
+
+
                 <div class="subInfo">
                     <p>Lieu de départ : <?php echo "$depart";?></p>
                     <p>Lieu d'arrivé : <?php echo "$arrivee";?> </p>
